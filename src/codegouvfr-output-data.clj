@@ -144,15 +144,15 @@
        maps-to-csv))
 
 (defn- compute-repo-score
-  [{:keys [metadata template description fork forks_count
-           archived subscribers_count stargazers_count]}]
+  [{:keys [metadata template description fork forks_count archived subscribers_count]}]
   (let [files  (:files metadata)
         high   1000
         medium 100
         low    10]
     (+
-     ;; Does the repo have a license?
-     (if (not-empty (:license files)) high 0)
+     ;; Does the repo have a known license?
+     (let [license (:license files)]
+       (if (and (not-empty license) (not (= "other" license))) high 0))
      ;; Is the repo a template?
      (if template high 0)
      ;; Does the repo have a publiccode.yml file?
